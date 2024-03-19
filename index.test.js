@@ -1,9 +1,11 @@
 import deviceRecordsSdk from "./data/records";
 
-deviceRecordsSdk.insertDeviceRecord({ "test": "test1" }, "mqttpublisherstack-mqttpublisherstore0e6186ff-rkppe6lcxwnw").then((res) => {
-    console.log("insertDeviceRecord: ", JSON.stringify(res))
-})
+const bucket = 'mqttpublisherstack-mqttpublisherstore0e6186ff-rkppe6lcxwnw'
 
-deviceRecordsSdk.listDeviceRecords("mqttpublisherstack-mqttpublisherstore0e6186ff-rkppe6lcxwnw").then((res) => {
-    console.log("listDeviceRecords: ", JSON.stringify(res))
+deviceRecordsSdk.insertDeviceRecord({ "testo": "5555" }, bucket).then((res) => {
+    console.log("insertDeviceRecord: ", JSON.stringify(res))
+    deviceRecordsSdk.listDeviceRecords(bucket).then((res) => {
+        console.log("listDeviceRecords: ", JSON.stringify(res))
+    })
+
 })
