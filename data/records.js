@@ -32,7 +32,7 @@ const listDeviceRecords = async (bucketName, date) => {
             Bucket: bucketName, Key: `${fileKey}.txt`
         });
         const response = await s3Client.send(command);
-        return = await response.Body
+        return await response.Body
     } catch (err) {
         console.error(err);
         throw new Error(err)
