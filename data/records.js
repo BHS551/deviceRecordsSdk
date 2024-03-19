@@ -5,10 +5,16 @@ const s3Client = new S3Client({});
 
 const insertDeviceRecord = async (recordData, bucketName) => {
     try {
+        let putCommandPayload = [recordData]
         const currentDate = moment().format('yyyy-MM-DD').toString()
-        console.log(currentDate)
+        try {
+            const deviceRecordsList = await listDeviceRecords(currentDate)
+            putCommandPayload = [...deviceRecordsList, recordData]
+        } catch (err) {
+            console.log("bucket object does not exist, creating it...")
+        }
         const command = new PutObjectCommand({
-            Bucket: bucketName, Body: JSON.stringify(recordData), Key: `${currentDate}.txt`
+            Bucket: bucketName, Body: JSON.stringify(putCommandPayload), Key: `${currentDate}.txt`
         });
         const result = await s3Client.send(command);
         return result
@@ -26,12 +32,10 @@ const listDeviceRecords = async (bucketName, date) => {
             Bucket: bucketName, Key: `${fileKey}.txt`
         });
         const response = await s3Client.send(command);
-        // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
-        const str = await response.Body.transformToString();
-        console.log(str);
-        return str
+        return = await response.Body
     } catch (err) {
         console.error(err);
+        throw new Error(err)
     }
 }
 
