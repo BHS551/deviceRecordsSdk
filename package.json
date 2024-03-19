@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx babel-node index.test"
   },
   "author": "brayham heredia",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.536.0",
     "moment": "^2.30.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/node": "^7.23.9",
+    "@babel/preset-env": "^7.24.0"
   }
 }
