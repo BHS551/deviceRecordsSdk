@@ -7,9 +7,10 @@ const insertDeviceRecord = async (recordData, bucketName) => {
     try {
         let putCommandPayload = [recordData]
         const currentDate = moment().format('yyyy-MM-DD').toString()
+        const dateTime = moment().format('yyyy-MM-DD HH:mm:ss').toString()
         try {
             const deviceRecordsList = await listDeviceRecords(bucketName, currentDate)
-            putCommandPayload = [...deviceRecordsList, recordData]
+            putCommandPayload = [...deviceRecordsList, { ...recordData, dateTime }]
         } catch (err) {
             console.log("bucket object does not exist, creating it...")
         }
