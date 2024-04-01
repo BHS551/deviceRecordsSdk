@@ -13,7 +13,7 @@ const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
         const secrets = JSON.parse(secretsResult.SecretString);
         const config = {
             privateKey: secrets.AWS_IOT_PRIVATE_KEY,
-            cert: secrets.AWS_IOT_CERTIFICATE,
+            clientCert: secrets.AWS_IOT_CERTIFICATE,
             caCert: secrets.AWS_IOT_ROOT_CA,
             clientId: secrets.AWS_IOT_CLIENT_ID,
             host: secrets.AWS_IOT_ENDPOINT
