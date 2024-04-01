@@ -12,13 +12,13 @@ const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
         console.log("SECRETS RESULT: ", secretsResult.SecretString)
         const secrets = JSON.parse(secretsResult.SecretString);
         const config = {
-            keyPath: secrets.AWS_IOT_PRIVATE_KEY_PATH,
-            certPath: secrets.AWS_IOT_CERTIFICATE_PATH,
-            caPath: secrets.AWS_IOT_ROOT_CA_PATH,
+            privateKey: secrets.AWS_IOT_PRIVATE_KEY,
+            cert: secrets.AWS_IOT_CERTIFICATE,
+            caCert: secrets.AWS_IOT_ROOT_CA,
             clientId: secrets.AWS_IOT_CLIENT_ID,
             host: secrets.AWS_IOT_ENDPOINT
         }
-
+        console.log("device config ", { config })
         let device = new awsIot.device({ ...config });
         const postDeviceMqttResponse = await device.publish(mqttTopic, JSON.stringify(postMessagePayload));
         return postDeviceMqttResponse
