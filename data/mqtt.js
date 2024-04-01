@@ -1,24 +1,22 @@
 import awsIot from 'aws-iot-device-sdk';
 
-let device = new awsIot.device({
-    keyPath: process.env.AWS_IOT_PRIVATE_KEY_PATH,
-    certPath: process.env.AWS_IOT_CERTIFICATE_PATH,
-    caPath: process.env.AWS_IOT_ROOT_CA_PATH,
-    clientId: process.env.AWS_IOT_CLIENT_ID,
-    host: process.env.AWS_IOT_ENDPOINT
-});
-
-const postDeviceMqtt = async (postMessagePayload) => {
+const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
     try {
+        const secretsManager = new AWS.SecretsManager();
+        const params = {
+            SecretId: 'aws_certificates',
+        };
+        const secrets = JSON.parse((await secretsManager.getSecretValue(params)).secretString);
         const config = {
-            keyPath: process.env.AWS_IOT_PRIVATE_KEY_PATH,
-            certPath: process.env.AWS_IOT_CERTIFICATE_PATH,
-            caPath: process.env.AWS_IOT_ROOT_CA_PATH,
-            clientId: process.env.AWS_IOT_CLIENT_ID,
-            host: process.env.AWS_IOT_ENDPOINT
+            keyPath: secrets.AWS_IOT_PRIVATE_KEY_PATH,
+            certPath: secrets.AWS_IOT_CERTIFICATE_PATH,
+            caPath: secrets.AWS_IOT_ROOT_CA_PATH,
+            clientId: secrets.AWS_IOT_CLIENT_ID,
+            host: secrets.AWS_IOT_ENDPOINT
         }
-        console.log(config)
-        const postDeviceMqttResponse = await device.publish(process.env.AWS_IOT_TOPIC, JSON.stringify(postMessagePayload));
+
+        let device = new awsIot.device({ ...config });
+        const postDeviceMqttResponse = await device.publish(mqttTopic, JSON.stringify(postMessagePayload));
         return postDeviceMqttResponse
     } catch (err) {
         console.log(err)
