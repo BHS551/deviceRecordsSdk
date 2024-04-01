@@ -9,7 +9,7 @@ const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
         };
         const secretsResult = await secretsManager.getSecretValue(params).promise();
         console.log("SECRETS RESULT: ", { secretsResult })
-        const secrets = JSON.parse(secretsResult.secretString);
+        const secrets = JSON.parse(secretsResult.SecretString);
         const config = {
             keyPath: secrets.AWS_IOT_PRIVATE_KEY_PATH,
             certPath: secrets.AWS_IOT_CERTIFICATE_PATH,
