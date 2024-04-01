@@ -1,4 +1,5 @@
 import * as awsIot from 'aws-iot-device-sdk';
+import * as AWS from 'aws-sdk';
 
 const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
     try {
