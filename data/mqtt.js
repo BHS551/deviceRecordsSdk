@@ -1,7 +1,5 @@
 import awsIot from 'aws-iot-device-sdk';
 
-const s3Client = new S3Client({});
-
 let device = new awsIot.device({
     keyPath: process.env.AWS_IOT_PRIVATE_KEY_PATH,
     certPath: process.env.AWS_IOT_CERTIFICATE_PATH,
