@@ -1,5 +1,5 @@
 
-import mqtt from 'mqtt';
+import mqtt from 'async-mqtt';
 import * as AWS from 'aws-sdk';
 
 const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
@@ -22,20 +22,28 @@ const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
             port: secrets.HIVEMQ_IOT_PORT,
         }
         console.log("device config ", { config })
-        const client = mqtt.connect(config.host, {
+        const client = await mqtt.connectAsync(config.host, {
             username: config.username,
             password: config.password,
             port: config.port,
-            protocol: 'mqtt'
+            protocol: 'mqtt',
+            reconnectPeriod: 5000,
+            will: {
+                topic: 'disconnected',
+                payload: 'server disconnected !',
+                qos: 1,
+                retain: true
+            }
         });
         console.log("client.connected: ", { connected: client.connected })
-        client.publish('cluster/messages/node7', 'Hello, HiveMQ!', { properties: { userProperties: { 'Source-Sensor-ID': '2dfxby20v2.1hz;vg' } } }, (err) => {
+        await client.publish('cluster/messages/node7', 'Hello, HiveMQ!', { properties: { userProperties: { 'Source-Sensor-ID': '2dfxby20v2.1hz;vg' } } }, (err) => {
             if (err) {
                 console.error('Failed to publish message:', err);
             } else {
                 console.log('Message published with user properties');
             }
         });
+        await client.end();
     } catch (err) {
         console.log(err)
         throw new Error(err)
