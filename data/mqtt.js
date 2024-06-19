@@ -19,11 +19,14 @@ const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
             username: secrets.HIVEMQ_IOT_USERNAME,
             password: secrets.HIVEMQ_IOT_PASSWORD,
             host: secrets.HIVEMQ_IOT_ENDPOINT,
+            port: secrets.HIVEMQ_IOT_PORT,
         }
         console.log("device config ", { config })
         const client = mqtt.connect(config.host, {
             username: config.username,
-            password: config.password
+            password: config.password,
+            port: config.port,
+            protocol: 'mqtt'
         });
         client.publish('cluster/messages/node7', 'Hello, HiveMQ!', { properties: { userProperties: { 'Source-Sensor-ID': '2dfxby20v2.1hz;vg' } } }, (err) => {
             if (err) {
