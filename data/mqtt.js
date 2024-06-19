@@ -28,6 +28,7 @@ const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
             port: config.port,
             protocol: 'mqtt'
         });
+        console.log("client.connected: ", { connected: client.connected })
         client.publish('cluster/messages/node7', 'Hello, HiveMQ!', { properties: { userProperties: { 'Source-Sensor-ID': '2dfxby20v2.1hz;vg' } } }, (err) => {
             if (err) {
                 console.error('Failed to publish message:', err);
