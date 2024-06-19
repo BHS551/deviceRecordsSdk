@@ -1,5 +1,6 @@
 
-import mqtt from 'async-mqtt';
+import mqtt from 'mqtt';
+import { asyncClient } from 'async-mqtt';
 import * as AWS from 'aws-sdk';
 
 const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
@@ -15,35 +16,37 @@ const postDeviceMqtt = async (mqttTopic, postMessagePayload) => {
         const config = {
             // key: secrets.HIVEMQ_PRIVATEKEY,
             // cert: secrets.HIVEMQ_IOT_CERTIFICATE,
-            // ca: secrets.HIVEMQ_IOT_ROOT_CA,
+            ca: secrets.HIVEMQ_IOT_ROOT_CA,
             username: secrets.HIVEMQ_IOT_USERNAME,
             password: secrets.HIVEMQ_IOT_PASSWORD,
             host: secrets.HIVEMQ_IOT_ENDPOINT,
             port: secrets.HIVEMQ_IOT_PORT,
         }
         console.log("device config ", { config })
-        const client = await mqtt.connectAsync(config.host, {
+        const protocol = 'mqtts'
+        const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
+        const connectUrl = `${protocol}://${config.host}:${config.port}`
+        const client = mqtt.connect(connectUrl, {
+            clientId,
+            clean: true,
+            connectTimeout: 4000,
             username: config.username,
             password: config.password,
-            port: config.port,
-            protocol: 'mqtt',
-            reconnectPeriod: 5000,
-            will: {
-                topic: 'disconnected',
-                payload: 'server disconnected !',
-                qos: 1,
-                retain: true
-            }
+            reconnectPeriod: 1000,
+            ca: config.ca
         });
-        console.log("client.connected: ", { connected: client.connected })
-        await client.publish('cluster/messages/node7', 'Hello, HiveMQ!', { properties: { userProperties: { 'Source-Sensor-ID': '2dfxby20v2.1hz;vg' } } }, (err) => {
-            if (err) {
-                console.error('Failed to publish message:', err);
-            } else {
-                console.log('Message published with user properties');
-            }
+        client.on("connect", () => {
+            client.subscribe("presence", (err) => {
+                if (!err) {
+                    client.publish("presence", "Hello mqtt");
+                }
+            });
         });
-        await client.end();
+
+        client.on("message", (topic, message) => {
+            // message is Buffer
+            console.log(message.toString());
+        });
     } catch (err) {
         console.log(err)
         throw new Error(err)
